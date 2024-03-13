@@ -4,6 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+char* pretty_token_type[] = {
+	"(", ")", "[", "]", "{", "}",
+
+	":", ";", ",", "@", "&", "*", "^", ".", ".*", "=", "==", "!", "!=", "<", "<<",
+	"<=", ">", ">>", ">=", "-", "%", "|", "+", "/",
+
+	KW_FN, KW_EXTERN, KW_VAR, KW_CONST, KW_STRUCT, KW_ENUM, KW_RETURN, KW_IF, KW_ELSE,
+	KW_WHILE, KW_FOR, KW_PUB, KW_ASYNC, KW_AWAIT, KW_IMPL, KW_TRUE, KW_FALSE,	KW_BREAK,
+	KW_CONTINUE, KW_PACKAGE, KW_IMPORT,
+
+	"integer literal", "float literal", "string literal", "char literal",
+
+	"identifier", "end of file"
+};
+
 char* read_file(const char* filepath) {
 	size_t lenght = 0, readBytes = 0;
 	char* buf = NULL;
@@ -82,12 +97,17 @@ Token lexer_make_token(SwanLexer* l) {
 
 	Token tokn = {0};
 
+	if (IS_AT_END(l->current, l->lenght)) {
+		tokn = lexer_token_simple(l, TOKEN_EOF);
+		return tokn;
+	}
+
 	switch (l->code[l->current]) {
 	case '(':
 		tokn = lexer_token_simple(l, TOKEN_LPAREN);
 		break;
 	default:
-		printf("Make an error system.");
+		printf("Make an error system. '%c'\n", l->code[l->current]);
 		exit(1);
 	}
 

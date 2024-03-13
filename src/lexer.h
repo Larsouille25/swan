@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+/*
+ * /!\ If you want to add a token type, add the pretty printing for it in
+ * the global 'pretty_token_type', below this enum.
+*/
 typedef enum {
 	// Delimiters
 	TOKEN_LPAREN, // (
@@ -72,6 +76,8 @@ typedef enum {
 	TOKEN_IDENT,
 	TOKEN_EOF,
 } TokenType;
+
+extern char* pretty_token_type[];
 
 typedef struct {
 	TokenType type;

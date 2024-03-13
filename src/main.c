@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+#include "pretty.h"
 
 int main(int argc, char **argv) {
 	if (argc == 1) {
@@ -13,10 +14,17 @@ int main(int argc, char **argv) {
 	printf("%s", buf);
 
 	SwanLexer lexer = {0};
-	lexer_init(&lexer, "  (");
+	lexer_init(&lexer, "  ((");
 
-	Token t = lexer_make_token(&lexer);
-	printf("type = %d, col = %d", t.type, t.column);
+	printf("\n");
+
+	Token t = {0};
+	while(t.type != TOKEN_EOF) {
+		t = lexer_make_token(&lexer);
+		pretty_token(stdout, &t);
+		printf(", ");
+	}
+	printf("\n");
 
 	free(buf);
 	return 0;
