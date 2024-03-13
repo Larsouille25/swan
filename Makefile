@@ -1,6 +1,6 @@
 # Project Settings
 debug ?= 0
-SRC_DIR := c_comp
+SRC_DIR := src
 LIB_DIR := lib
 
 # Generate paths for all object files
@@ -37,4 +37,4 @@ $(OBJS):
 clean:
 	@rm -r $(SRC_DIR)/*.o
 
-.PHONY: clean
+.PHONY: clean swanc
