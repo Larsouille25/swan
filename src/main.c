@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 	Token t = {0};
 	while(t.type != TOKEN_EOF) {
 		t = lexer_make_token(&lexer);
-		pretty_token(stdout, &t);
+		dbg_token(stdout, &t);
 		printf(", ");
 	}
 	printf("\n");
