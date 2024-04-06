@@ -37,4 +37,7 @@ $(OBJS):
 clean:
 	@rm -r $(SRC_DIR)/*.o
 
-.PHONY: clean swanc
+watch:
+	 watchexec "make -B && echo "" && ./swanc example/fibonacci.sn"
+
+.PHONY: clean swanc watch
