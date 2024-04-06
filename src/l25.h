@@ -118,34 +118,26 @@ L25_Res l25_ds_init(L25_DynString* ds, size_t cap) {
 
 L25_Res l25_ds_push(L25_DynString* ds, char c) {
 	if (ds->len >= ds->cap) {
-		size_t newcap = ds->cap * 2;
-		char* newstr = (char*)realloc(ds->str, newcap * sizeof(char));
-
+		ds->cap = ds->cap * 2;
+		ds->str = (char*)realloc(ds->str, ds->cap * sizeof(char));
 		if (!ds->str) {
 			return L25_ALLOC_ERR;
 		}
-
-		ds->str = newstr;
-		ds->cap = newcap;
 	}
 	ds->str[ds->len++] = c;
 	return L25_OK;
 }
 
 L25_Res l25_ds_append_ss(L25_DynString* ds, L25_StringSlice ss) {
-	size_t new_len = ds->len + ss.len;
-	if (ds->cap > new_len) {
-		char* newstr = (char*)realloc(ds->str, new_len * sizeof(char));
-
+	if (ds->cap - ds->len > ss.len) {
+		ds->cap = ds->len + ss.len;
+		ds->str = (char*)realloc(ds->str, ds->cap * sizeof(char));
 		if (!ds->str) {
 			return L25_ALLOC_ERR;
 		}
-
-		ds->str = newstr;
-		ds->cap = new_len;
 	}
 	memcpy(ds->str + ds->len, ss.str, ss.len);
-	ds->len = new_len;
+	ds->len += ss.len;
 	return L25_OK;
 }
 
