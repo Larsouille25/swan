@@ -13,7 +13,7 @@ typedef enum {
 	SWER_WARNING,
 } ErrorType;
 
-void display_error_type(FILE* file, ErrorType errty);
+L25_Style display_error_type(FILE* file, ErrorType errty);
 L25_StringSlice get_line(const char* code, size_t line);
 
 typedef struct {
