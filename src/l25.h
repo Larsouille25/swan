@@ -39,11 +39,11 @@ typedef enum  {
 	WHITE_BG_COLOR = 47,
 } L25_Style;
 
-#define BRIGHTEN_COLOR(color) ((color) + 60)
+#define l25_brighten(color) ((color) + 60)
 
-#define set_style_two(stream, lhs, rhs) fprintf(stream, "\x1B[%d;%dm", lhs, rhs);
-#define set_style(stream, style) fprintf(stream, "\x1B[%dm", style);
-#define reset_style(stream) fprintf(stream, "\x1B[0;0m");
+#define l25_set_style_two(stream, lhs, rhs) fprintf(stream, "\x1B[%d;%dm", lhs, rhs);
+#define l25_set_style(stream, style) fprintf(stream, "\x1B[%dm", style);
+#define l25_reset_style(stream) fprintf(stream, "\x1B[0;0m");
 
 typedef enum {
 	L25_OK,
@@ -85,6 +85,10 @@ void l25_ds_free(L25_DynString* ds);
 L25_Res l25_ds_from_cstr(L25_DynString* ds, char* cstr);
 // Write to the stream the string slice.
 void l25_fputds(L25_DynString* ds, FILE* stream);
+
+// Takes an integer as argument and returns how many digits you need to write
+// in base 10.
+long int l25_digits(long int num);
 
 #endif // L25_H_
 
@@ -157,6 +161,19 @@ void l25_ds_free(L25_DynString* ds) {
 	ds->cap = 0;
 	free(ds->str);
 	ds->str = NULL;
+}
+
+long int l25_digits(long int num) {
+	long int count = 0;
+	if (num == 0)
+		return 1;
+	if (num < 0)
+		num = -num;
+	while (num != 0) {
+		num /= 10;
+		count++;
+	}
+	return count;
 }
 
 #endif // L25_IMPL
