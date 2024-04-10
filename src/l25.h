@@ -14,6 +14,8 @@ dynamic arrays and maybe allocators.
 #include <stdlib.h>
 #include <stdio.h>
 
+//       COLOR & STYLE
+
 typedef enum  {
 	RESET_STYLE = 0,
 	BOLD_STYLE = 1,
@@ -45,6 +47,8 @@ typedef enum  {
 #define l25_set_style(stream, style) fprintf(stream, "\x1B[%dm", style);
 #define l25_reset_style(stream) fprintf(stream, "\x1B[0;0m");
 
+//       STRING SLICE
+
 typedef enum {
 	L25_OK,
 	L25_ERROR,
@@ -61,6 +65,8 @@ typedef struct {
 L25_StringSlice l25_cstr_to_ss(char* c_str);
 // Write to the stream the string slice.
 void l25_fputss(L25_StringSlice ss, FILE* stream);
+
+//       DYNAMIC STRING
 
 typedef struct {
 	char *str;
@@ -85,6 +91,37 @@ void l25_ds_free(L25_DynString* ds);
 L25_Res l25_ds_from_cstr(L25_DynString* ds, char* cstr);
 // Write to the stream the string slice.
 void l25_fputds(L25_DynString* ds, FILE* stream);
+
+//       DYNAMIC ARRAY, aka VECTOR or VEC
+
+// Macro to initialize a Vector type.
+#define l25_vec_init(vec, vecCap) \
+		do { \
+			(vec)->items = malloc((vecCap) * sizeof(*(vec)->items)); \
+			(vec)->len = 0; \
+			(vec)->cap = (vecCap); \
+		} while (0)
+
+// Macro to push an item to a Vector type.
+#define l25_vec_push(vec, item) \
+		do { \
+			if ((vec)->len >= (vec)->cap) { \
+				(vec)->cap = ((vec)->cap == 0) ? 1 : (vec)->cap * 2; \
+				(vec)->items = realloc((vec)->items, (vec)->cap * sizeof(*(vec)->items)); \
+			} \
+			(vec)->items[(vec)->len++] = (item); \
+		} while (0)
+
+// Macro to deinitialize a Vector type.
+#define l25_vec_deinit(vec) \
+    do { \
+        (vec)->len = 0; \
+        (vec)->cap = 0; \
+        free((vec)->items); \
+        (vec)->items = NULL; \
+    } while (0)
+
+//       MISCELLANEOUS
 
 // Takes an integer as argument and returns how many digits you need to write
 // in base 10.
