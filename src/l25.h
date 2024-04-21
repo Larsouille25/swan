@@ -114,18 +114,30 @@ void l25_fputds(L25_DynString* ds, FILE* stream);
 
 // Macro to deinitialize a Vector type.
 #define l25_vec_deinit(vec) \
-    do { \
-        (vec)->len = 0; \
-        (vec)->cap = 0; \
-        free((vec)->items); \
-        (vec)->items = NULL; \
-    } while (0)
+		do { \
+			(vec)->len = 0; \
+			(vec)->cap = 0; \
+			free((vec)->items); \
+			(vec)->items = NULL; \
+		} while (0)
 
 //       MISCELLANEOUS
 
 // Takes an integer as argument and returns how many digits you need to write
 // in base 10.
 long int l25_digits(long int num);
+
+#define l25_max(a, b) \
+		({ __typeof__ (a) _a = (a); \
+		__typeof__ (b) _b = (b); \
+		_a > _b ? _a : _b; \
+		})
+
+#define l25_min(a, b) \
+		({ __typeof__ (a) _a = (a); \
+		__typeof__ (b) _b = (b); \
+		_a < _b ? _a : _b; \
+		})
 
 #endif // L25_H_
 
