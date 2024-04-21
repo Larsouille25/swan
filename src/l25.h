@@ -121,6 +121,9 @@ void l25_fputds(L25_DynString* ds, FILE* stream);
 			(vec)->items = NULL; \
 		} while (0)
 
+#define l25_vec_get(vec, idx) \
+		(assert(idx < (vec)->len && "Index out of bounds"), &(vec)->items[(idx)])
+
 //       RANGES
 
 typedef struct {
