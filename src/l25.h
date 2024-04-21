@@ -121,6 +121,14 @@ void l25_fputds(L25_DynString* ds, FILE* stream);
 			(vec)->items = NULL; \
 		} while (0)
 
+//       RANGES
+
+typedef struct {
+	size_t start, end;
+} L25_Range;
+
+bool l25_check_range(L25_Range* range);
+
 //       MISCELLANEOUS
 
 // Takes an integer as argument and returns how many digits you need to write
@@ -223,6 +231,10 @@ long int l25_digits(long int num) {
 		count++;
 	}
 	return count;
+}
+
+bool l25_check_range(L25_Range* range) {
+	return range->start < range->end;
 }
 
 #endif // L25_IMPL
