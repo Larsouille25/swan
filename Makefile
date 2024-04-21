@@ -13,9 +13,8 @@ CC := gcc
 # 	-std=c11: Use the C11 standard
 # 	-Wall: Enable all warnings
 # 	-Wextra: Enable extra warnings
-# 	-pedantic: Enable pedantic warnings
 # 	-lm: Link to libm
-CFLAGS := -std=c11 -Wall -Wextra -pedantic
+CFLAGS := -std=c11 -Wall -Wextra
 LDFLAGS := -lm
 
 ifeq ($(debug), 1)
