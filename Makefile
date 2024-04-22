@@ -1,5 +1,5 @@
 # Project Settings
-debug ?= 0
+debug ?= 1
 SRC_DIR := src
 LIB_DIR := lib
 
