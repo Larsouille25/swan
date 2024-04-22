@@ -121,20 +121,20 @@ SwanError new_error(SwanLogCtx* ctx, ErrorType type, char* msg, L25_Range range)
 	return err;
 }
 
-L25_StringSlice get_line(const char* code, size_t line) {
+L25_StringSlice get_line(L25_StringSlice code, size_t line) {
 	L25_StringSlice res = {0};
 
 	// Check if the string is not null.
-	if (!code && code[0] == '\0') {
+	if (!code.str && code.len == 0) {
 		return res;
 	}
 
 	size_t curline = 0;
-	const char* ptr = code;
+	const char* ptr = code.str;
 	const char* start = NULL;
 
 	// Find the start of the target line
-	while (*ptr != '\0') {
+	for (size_t i = 0; i <= code.len; i++) {
 		if (curline == line) {
 			start = ptr;
 			break;
@@ -179,12 +179,12 @@ void error_stream_render(SwanErrorStream* ses, FILE* stream) {
 	}
 }
 
-void linecol(char* code, SwanHalfPos* dest, size_t idx) {
+void linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx) {
 	dest->line = 1;
 	dest->col = 0;
 
-	char* ptr = code;
-	for (size_t i = 0; *ptr != '\0'; i++) {
+	const char* ptr = code.str;
+	for (size_t i = 0; i <= code.len; i++) {
 		if (idx == i)
 			break;
 		switch (*ptr) {
@@ -198,9 +198,16 @@ void linecol(char* code, SwanHalfPos* dest, size_t idx) {
 		ptr++;
 	}
 }
-void pos_from_range(char* code, SwanPosition* dest, size_t start, size_t end) {
-	assert(start <= end);
+void pos_from_range(L25_StringSlice code, SwanPosition* dest, L25_Range range) {
+	assert(l25_check_range(&range));
 
-	linecol(code, &dest->start, start);
-	linecol(code, &dest->end, end);
+	linecol(code, &dest->start, range.start);
+	linecol(code, &dest->end, range.end);
+}
+
+SwanLogCtx swan_lctx_init(char* path, char* code) {
+	return (SwanLogCtx){
+		.path = path,
+		.code = l25_cstr_to_ss(code),
+	};
 }
