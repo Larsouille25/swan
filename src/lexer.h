@@ -1,6 +1,9 @@
 #ifndef SWAN_LEXER_H
 #define SWAN_LEXER_H
 
+#include "l25.h"
+#include "errors.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -80,24 +83,52 @@ extern char* pretty_token_type[];
 typedef struct {
 	TokenType type;
 	void* lexeme;
-	int column;
-	int line;
+	L25_Range span;
 } Token;
 
 typedef struct {
+	Token* items;
+	size_t len;
+	size_t cap;
+} TokenStream;
+
+typedef struct {
+	enum {
+		SLR_TOK,
+		SLR_ERROR,
+		SLR_PART_SUCCESS,
+		SLR_WHITESPACE,
+		SLR_COMMENT,
+	} tag;
+
+	union {
+		Token tok;
+		SwanError error;
+		struct {
+			SwanErrorStream errs;
+			Token tok;
+		} part_success;
+	};
+} SwanLexerRes;
+
+typedef struct {
 	const char* code;
-	size_t lenght;
-	int current;
-	int line;
+	size_t codelen;
+	size_t prev_idx;
+	size_t idx;
 } SwanLexer;
 
-void lexer_init(SwanLexer* l, const char* code);
-void lexer_skip_whitespace(SwanLexer* l);
-Token lexer_token(SwanLexer* l, TokenType type, void* lexeme);
-Token lexer_token_simple(SwanLexer* l, TokenType type);
-Token lexer_make_token(SwanLexer* l);
+SwanLexer* snlxr_init(const char* code);
+Token snlxr_token(SwanLexer* l, TokenType type, void* lexeme);
+Token snlxr_simpletokn(SwanLexer* l, TokenType type);
+char snlxr_peek(SwanLexer* l);
+char snlxr_pop(SwanLexer* l);
+SwanLexerRes snlxr_make_token(SwanLexer* l);
+bool snlxr_push_tok(SwanLexer* l, TokenStream* ts, Token tok);
+TokenStream* snlxr_lex(SwanLexer* l);
+void snlxr_deinit(SwanLexer* l);
 
-#define IS_AT_END(x, codelenght) (((size_t)x) >= (codelenght))
+#define IS_AT_END(x, codelength) ((x) >= (codelength))
 
 #define KW_FUN "fun"
 #define KW_EXTERN "extern"

@@ -1,8 +1,10 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "l25.h"
 #include "lexer.h"
 #include "pretty.h"
+#include "errors.h"
 
 int main(int argc, char **argv) {
 	if (argc == 1) {
@@ -11,20 +13,21 @@ int main(int argc, char **argv) {
 	}
 
 	char* buf = read_file(argv[1]);
-	printf("%s", buf);
+	SwanLexer* l = snlxr_init(buf);
 
-	SwanLexer lexer = {0};
-	lexer_init(&lexer, "  ((");
+	TokenStream* ts = snlxr_lex(l);
 
-	printf("\n");
-
-	Token t = {0};
-	while(t.type != TOKEN_EOF) {
-		t = lexer_make_token(&lexer);
-		dbg_token(stdout, &t);
-		printf(", ");
+	Token* t;
+	for (size_t i = 0; i < ts->len; i++) {
+		t = l25_vec_get(ts, i);
+		dbg_token(stdout, t);
+		printf("(%ld..%ld)", t->span.start, t->span.end);
+		fputs(", ", stdout);
 	}
-	printf("\n");
+
+	free(ts);
+	ts = NULL;
+	snlxr_deinit(l);
 
 	free(buf);
 	return 0;

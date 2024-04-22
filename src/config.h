@@ -7,4 +7,7 @@
 // The default width to center in the line number when printing the error.
 #define SWAN_ERROR_DEFAULT_WIDTH 7
 
+// Default capacity of the token stream when newly created.
+#define SWAN_TOKEN_STREAM_CAP 16
+
 #endif // SWAN_CONFIG_H

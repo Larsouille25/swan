@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "l25.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,62 +57,103 @@ char* read_file(const char* filepath) {
 	return buf;
 }
 
-void lexer_init(SwanLexer* l, const char* code) {
+SwanLexer* snlxr_init(const char* code) {
+	SwanLexer* l = malloc(sizeof(SwanLexer));
 	l->code = code;
-	l->current = 0;
-	l->line = 1;
-	l->lenght = strlen(l->code);
+	l->codelen = strlen(code);
+	l->idx = 0;
+	l->prev_idx = 0;
+	return l;
 }
 
-Token lexer_token(SwanLexer* l, TokenType type, void* lexeme) {
+Token snlxr_token(SwanLexer* l, TokenType type, void* lexeme) {
 	Token tok = {0};
 	tok.type = type;
 	tok.lexeme = lexeme;
-	tok.column = l->current;
-	tok.line = l->line;
+	tok.span = (L25_Range){ .start = l->prev_idx, .end = l->idx };
 	return tok;
 }
 
-Token lexer_token_simple(SwanLexer* l, TokenType type) {
-	return lexer_token(l, type, NULL);
+Token snlxr_simpletokn(SwanLexer* l, TokenType type) {
+	return snlxr_token(l, type, NULL);
 }
 
-void lexer_skip_whitespace(SwanLexer* l) {
-	while (!IS_AT_END(l->current, l->lenght)) {
-	switch (l->code[l->current]) {
-    case ' ':
-		case '\r':
-		case '\t':
-			l->current++;
+char snlxr_peek(SwanLexer* l) {
+	return l->code[l->idx];
+}
+
+char snlxr_pop(SwanLexer* l) {
+	char c = snlxr_peek(l);
+	l->idx++;
+	return c;
+}
+
+SwanLexerRes snlxr_make_token(SwanLexer* l) {
+	SwanLexerRes res = { .tag = SLR_TOK };
+	if (l->idx >= l->codelen){
+		res.tok = snlxr_simpletokn(l, TOKEN_EOF);
+		return res;
+	}
+	switch (snlxr_pop(l)) {
+		case 0x09:
+		case 0x0A:
+		case 0x0B:
+		case 0x0C:
+		case 0x0D:
+		case 0x20:
+			res.tag = SLR_WHITESPACE;
 			break;
-		case '\n':
-			l->line++;
+		case '(':
+			res.tok = snlxr_simpletokn(l, TOKEN_LPAREN);
+			break;
+		case ')':
+			res.tok = snlxr_simpletokn(l, TOKEN_RPAREN);
+			break;
 		default:
-			return;
-    }
-  }
+			exit(123);
+	}
+	return res;
 }
 
-Token lexer_make_token(SwanLexer* l) {
-	lexer_skip_whitespace(l);
-
-	Token tokn = {0};
-
-	if (IS_AT_END(l->current, l->lenght)) {
-		tokn = lexer_token_simple(l, TOKEN_EOF);
-		return tokn;
+bool snlxr_push_tok(SwanLexer* l, TokenStream* ts, Token tok) {
+	if (tok.type == TOKEN_EOF) {
+		tok.span = (L25_Range){.start = l->codelen - 1, .end = l->codelen };
+		l25_vec_push(ts, tok);
+		return true;
 	}
+	l25_vec_push(ts, tok);
+	return false;
+}
 
-	switch (l->code[l->current]) {
-	case '(':
-		tokn = lexer_token_simple(l, TOKEN_LPAREN);
-		break;
-	default:
-		printf("Make an error system. '%c'\n", l->code[l->current]);
-		exit(1);
+TokenStream* snlxr_lex(SwanLexer* l) {
+	TokenStream* ts = malloc(sizeof(TokenStream));
+	l25_vec_init(ts, SWAN_TOKEN_STREAM_CAP);
+	SwanLexerRes res = {0};
+
+	for(;;) {
+		l->prev_idx = l->idx;
+		res = snlxr_make_token(l);
+		switch (res.tag) {
+			case SLR_TOK:
+				if(snlxr_push_tok(l, ts, res.tok))
+					// reached end of file
+					goto end;
+				break;
+			case SLR_ERROR:
+				exit(1);
+			case SLR_PART_SUCCESS:
+				exit(15);
+			case SLR_COMMENT:
+			case SLR_WHITESPACE:
+				break;
+		}
 	}
+end:
 
-	l->current++;
+	return ts;
+}
 
-	return tokn;
+void snlxr_deinit(SwanLexer* l) {
+	free(l);
+	l = NULL;
 }
