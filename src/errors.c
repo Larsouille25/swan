@@ -9,12 +9,12 @@
 
 static void display_snippet(FILE* stream, SwanError* err, L25_Style err_style);
 
-void display_error(FILE* stream, SwanError* err) {
+void snerr_display_error(FILE* stream, SwanError* err) {
 	l25_set_style(stream, BOLD_STYLE);
 	printf("%s:%ld:%ld: ", err->ctx->path, err->pos.start.line, err->pos.start.col);
 
 	l25_reset_style(stream);
-	L25_Style err_style = display_error_type(stream, err->type);
+	L25_Style err_style = snerr_display_error_type(stream, err->type);
 
 	fputs(err->msg, stream);
 	fputc('\n', stream);
@@ -35,7 +35,7 @@ static void display_snippet(FILE* stream, SwanError* err, L25_Style err_style) {
 		left_pad = 1;
 	}
 
-	L25_StringSlice line_str = get_line(err->ctx->code, lpos->line - 1);
+	L25_StringSlice line_str = snerr_get_line(err->ctx->code, lpos->line - 1);
 
 	size_t start, end;
 	start = pos->start.col;
@@ -69,7 +69,7 @@ static void display_snippet(FILE* stream, SwanError* err, L25_Style err_style) {
 		fprintf(stream, "%*s%*s%*s| ...\n", padding + left_pad - 1, "", digits, "...", padding - 1, "");
 	}
 	if (pos->start.line != pos->end.line) {
-		line_str = get_line(err->ctx->code, pos->end.line - 1);
+		line_str = snerr_get_line(err->ctx->code, pos->end.line - 1);
 
 		start = 0;
 		end = pos->end.col - 1;
@@ -92,14 +92,14 @@ static void display_snippet(FILE* stream, SwanError* err, L25_Style err_style) {
 	}
 }
 
-L25_Style display_error_type(FILE* stream, ErrorType errty) {
+L25_Style snerr_display_error_type(FILE* stream, ErrorType errty) {
 	switch (errty) {
-		case SWER_ERROR:
+		case SNERR_ERROR:
 			l25_set_style_two(stream, BOLD_STYLE, RED_FG_COLOR);
 			fprintf(stream, "error: ");
 			l25_reset_style(stream);
 			return RED_FG_COLOR;
-		case SWER_WARNING:
+		case SNERR_WARNING:
 			l25_set_style_two(stream, BOLD_STYLE, MAGENTA_FG_COLOR);
 			fprintf(stream, "warning: ");
 			l25_reset_style(stream);
@@ -109,19 +109,19 @@ L25_Style display_error_type(FILE* stream, ErrorType errty) {
 	exit(1);
 }
 
-SwanError new_error(SwanLogCtx* ctx, ErrorType type, char* msg, L25_Range range) {
+SwanError snerr_new_error(SwanLogCtx* ctx, ErrorType type, char* msg, L25_Range range) {
 	SwanError err = {
 		.type = type,
 		.msg = msg,
 		.ctx = ctx,
 	};
 	assert(l25_check_range(&range));
-	linecol(ctx->code, &err.pos.start, range.start);
-	linecol(ctx->code, &err.pos.end, range.end);
+	snerr_linecol(ctx->code, &err.pos.start, range.start);
+	snerr_linecol(ctx->code, &err.pos.end, range.end);
 	return err;
 }
 
-L25_StringSlice get_line(L25_StringSlice code, size_t line) {
+L25_StringSlice snerr_get_line(L25_StringSlice code, size_t line) {
 	L25_StringSlice res = {0};
 
 	// Check if the string is not null.
@@ -160,26 +160,26 @@ L25_StringSlice get_line(L25_StringSlice code, size_t line) {
 	return res;
 }
 
-void error_stream_init(SwanErrorStream* ses) {
+void snerr_errs_init(SwanErrorStream* ses) {
 	l25_vec_init(ses, SWAN_ERROR_STREAM_DEFAULT_CAP);
 }
 
-void error_stream_push(SwanErrorStream* ses, SwanError err) {
+void snerr_errs_push(SwanErrorStream* ses, SwanError err) {
 	l25_vec_push(ses, err);
 }
 
-void error_stream_deinit(SwanErrorStream* ses) {
+void snerr_errs_deinit(SwanErrorStream* ses) {
 	l25_vec_deinit(ses);
 }
 
-void error_stream_render(SwanErrorStream* ses, FILE* stream) {
+void snerr_errs_render(SwanErrorStream* ses, FILE* stream) {
 	for (size_t i = 0; i < ses->len; i++) {
 		SwanError* err = l25_vec_get(ses, i);
-		display_error(stream, err);
+		snerr_display_error(stream, err);
 	}
 }
 
-void linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx) {
+void snerr_linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx) {
 	dest->line = 1;
 	dest->col = 0;
 
@@ -201,11 +201,11 @@ void linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx) {
 void pos_from_range(L25_StringSlice code, SwanPosition* dest, L25_Range range) {
 	assert(l25_check_range(&range));
 
-	linecol(code, &dest->start, range.start);
-	linecol(code, &dest->end, range.end);
+	snerr_linecol(code, &dest->start, range.start);
+	snerr_linecol(code, &dest->end, range.end);
 }
 
-SwanLogCtx swan_lctx_init(char* path, char* code) {
+SwanLogCtx snerr_lctx_init(char* path, char* code) {
 	return (SwanLogCtx){
 		.path = path,
 		.code = l25_cstr_to_ss(code),

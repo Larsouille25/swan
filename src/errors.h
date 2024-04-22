@@ -12,12 +12,12 @@
 #endif
 
 typedef enum {
-	SWER_ERROR,
-	SWER_WARNING,
+	SNERR_ERROR,
+	SNERR_WARNING,
 } ErrorType;
 
-L25_Style display_error_type(FILE* file, ErrorType errty);
-L25_StringSlice get_line(L25_StringSlice code, size_t line);
+L25_Style snerr_display_error_type(FILE* file, ErrorType errty);
+L25_StringSlice snerr_get_line(L25_StringSlice code, size_t line);
 
 typedef struct {
 	size_t line;
@@ -29,14 +29,14 @@ typedef struct {
 	SwanHalfPos end;
 } SwanPosition;
 
-void linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx);
-void pos_from_range(L25_StringSlice code, SwanPosition* dest, L25_Range range);
+void snerr_linecol(L25_StringSlice code, SwanHalfPos* dest, size_t idx);
+void snerr_pos_from_range(L25_StringSlice code, SwanPosition* dest, L25_Range range);
 
 typedef struct {
 	char* path;
 	L25_StringSlice code;
 } SwanLogCtx;
-SwanLogCtx swan_lctx_init(char* path, char* code);
+SwanLogCtx snerr_lctx_init(char* path, char* code);
 
 typedef struct {
 	SwanPosition pos;
@@ -45,8 +45,8 @@ typedef struct {
 	SwanLogCtx* ctx;
 } SwanError;
 
-void display_error(FILE* stream, SwanError* err);
-SwanError new_error(SwanLogCtx* ctx, ErrorType type, char* msg, L25_Range span);
+void snerr_display_error(FILE* stream, SwanError* err);
+SwanError snerr_new_error(SwanLogCtx* ctx, ErrorType type, char* msg, L25_Range span);
 
 typedef struct {
 	SwanError* items;
@@ -54,9 +54,9 @@ typedef struct {
 	size_t cap;
 } SwanErrorStream;
 
-void error_stream_init(SwanErrorStream* ses);
-void error_stream_push(SwanErrorStream* ses, SwanError err);
-void error_stream_deinit(SwanErrorStream* ses);
-void error_stream_render(SwanErrorStream* ses, FILE* stream);
+void snerr_errs_init(SwanErrorStream* ses);
+void snerr_errs_push(SwanErrorStream* ses, SwanError err);
+void snerr_errs_deinit(SwanErrorStream* ses);
+void snerr_errs_render(SwanErrorStream* ses, FILE* stream);
 
 #endif // SWAN_ERRORS_H
