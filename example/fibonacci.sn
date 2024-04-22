@@ -1,5 +1,7 @@
 #import std.io.printLn
 
+#val TEST = 123
+
 pub fun fib(n: usize) usize {
 	if (N <= 1)
 		return 1
