@@ -13,6 +13,7 @@ dynamic arrays and maybe allocators.
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 //       COLOR & STYLE
 
