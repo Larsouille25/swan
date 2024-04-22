@@ -4,9 +4,9 @@
 #include "lexer.h"
 #include <stdio.h>
 
-void pretty_token(FILE* file, Token* tok);
+void snpty_display_token(FILE* file, Token* tok);
 
-extern char* dbg_token_names[];
-void dbg_token(FILE* file, Token* t);
+extern char* snpty_token_names[];
+void snpty_dbg_token(FILE* file, Token* t);
 
 #endif // SWAN_PRETTY_H

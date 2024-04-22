@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* dbg_token_names[] = {
+char* snpty_token_names[] = {
 	"LPAREN", "RPAREN", "LBRACKET", "RBRACKET", "LBRACE", "LBRACE",
 
 	"COLON", "SEMICOLON", "COMMA", "AT", "AMPERSAND", "ASTERISK", "CARET", "DOT",
@@ -21,7 +21,7 @@ char* dbg_token_names[] = {
 	"IDENT", "EOF"
 };
 
-void pretty_token(FILE* file, Token* tok) {
+void snpty_display_token(FILE* file, Token* tok) {
 	fprintf(file, "%s", pretty_token_type[(int)tok->type]);
 
 	if (tok->lexeme) {
@@ -52,8 +52,8 @@ void pretty_token(FILE* file, Token* tok) {
 	}
 }
 
-void dbg_token(FILE* file, Token* t) {
-	fprintf(file, "%s", dbg_token_names[(int)t->type]);
+void snpty_dbg_token(FILE* file, Token* t) {
+	fprintf(file, "%s", snpty_token_names[(int)t->type]);
 
 	if (t->lexeme) {
 		fprintf(file, "(");
