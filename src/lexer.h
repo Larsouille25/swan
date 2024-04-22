@@ -44,7 +44,7 @@ typedef enum {
 	TOKEN_SLASH, // /
 
 	// Keywords
-	TOKEN_FN,
+	TOKEN_FUN,
 	TOKEN_EXTERN,
 	TOKEN_VAR,
 	TOKEN_CONST,
@@ -63,8 +63,6 @@ typedef enum {
 	TOKEN_FALSE,
 	TOKEN_BREAK,
 	TOKEN_CONTINUE,
-	TOKEN_PACKAGE,
-	TOKEN_IMPORT,
 
 	// Literals
 	TOKEN_INT,
@@ -101,7 +99,7 @@ Token lexer_make_token(SwanLexer* l);
 
 #define IS_AT_END(x, codelenght) (((size_t)x) >= (codelenght))
 
-#define KW_FN "fn"
+#define KW_FUN "fun"
 #define KW_EXTERN "extern"
 #define KW_VAR "var"
 #define KW_CONST "const"
@@ -120,8 +118,6 @@ Token lexer_make_token(SwanLexer* l);
 #define KW_FALSE "false"
 #define KW_BREAK "break"
 #define KW_CONTINUE "continue"
-#define KW_PACKAGE "package"
-#define KW_IMPORT "import"
 /*
 Reads a file from the given filepath, returns a c string allocated with malloc
 and NULL in case an error occured.

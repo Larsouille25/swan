@@ -10,9 +10,9 @@ char* pretty_token_type[] = {
 	":", ";", ",", "@", "&", "*", "^", ".", ".*", "=", "==", "!", "!=", "<", "<<",
 	"<=", ">", ">>", ">=", "-", "%", "|", "+", "/",
 
-	KW_FN, KW_EXTERN, KW_VAR, KW_CONST, KW_STRUCT, KW_ENUM, KW_RETURN, KW_IF, KW_ELSE,
+	KW_FUN, KW_EXTERN, KW_VAR, KW_CONST, KW_STRUCT, KW_ENUM, KW_RETURN, KW_IF, KW_ELSE,
 	KW_WHILE, KW_FOR, KW_PUB, KW_ASYNC, KW_AWAIT, KW_IMPL, KW_TRUE, KW_FALSE,	KW_BREAK,
-	KW_CONTINUE, KW_PACKAGE, KW_IMPORT,
+	KW_CONTINUE,
 
 	"integer literal", "float literal", "string literal", "char literal",
 
